@@ -3,75 +3,187 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — HR Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    @keyframes fadeInUp { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
-    .login-box { animation: fadeInUp 0.5s ease forwards; }
-  </style>
+  <title>HR & Department Owner Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-<div class="login-page">
-  <div class="login-box" id="loginBox">
+<body class="bg-slate-100 font-sans text-slate-800">
 
-    <!-- Logo -->
-    <div class="login-logo">⚡ EMS Portal</div>
-    <div class="login-tagline">HR &amp; Department Owner Access Only</div>
-
-    <!-- ── STEP 1: Email ───────────────────── -->
-    <div class="login-step active" id="step1">
-      <div class="login-title">Welcome Back</div>
-      <div class="login-subtitle">Enter your registered <strong>@company.com</strong> email address to continue.</div>
-
-      <div class="l-field">
-        <label class="l-label" for="loginEmail">Work Email</label>
-        <input class="l-input" type="email" id="loginEmail"
-               placeholder="yourname@company.com" autocomplete="email">
-        <span class="l-error" id="emailError"></span>
+  <div class="flex h-screen overflow-hidden">
+    <aside class="w-64 bg-slate-900 text-white flex flex-col justify-between p-4 hidden md:flex">
+      <div>
+        <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-700">
+          <i class="fa-solid fa-users-gear text-2xl text-blue-400"></i>
+          <span class="text-xl font-bold tracking-wide">Enterprise HR</span>
+        </div>
+        <nav class="mt-6 space-y-2">
+          <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white font-medium">
+            <i class="fa-solid fa-chart-line"></i> Dashboard
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition">
+            <i class="fa-solid fa-user-group"></i> Employees
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition">
+            <i class="fa-solid fa-calendar-check"></i> Attendance
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition">
+            <i class="fa-solid fa-wallet"></i> Payroll
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition">
+            <i class="fa-solid fa-file-invoice"></i> Reports
+          </a>
+        </nav>
       </div>
-
-      <button class="btn-login" id="btnSendOTP">Send OTP →</button>
-
-      <div style="margin-top:20px;text-align:center;font-size:0.72rem;color:var(--text-muted)">
-        🔒 Access restricted to authorised HR personnel only
+      <div class="border-t border-slate-700 pt-4 px-2 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-between font-bold text-sm justify-center">R</div>
+          <div>
+            <p class="text-sm font-semibold">Rahul Sharma</p>
+            <p class="text-xs text-slate-400">HR Owner</p>
+          </div>
+        </div>
+        <button class="text-slate-400 hover:text-red-400"><i class="fa-solid fa-right-from-bracket"></i></button>
       </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-y-auto">
+      
+      <header class="bg-white shadow-sm border-b px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+        <div class="flex items-center gap-6">
+          <nav class="flex gap-4 text-sm font-medium text-slate-600">
+            <a href="#" class="text-blue-600 font-semibold">Home</a>
+            <a href="#" class="hover:text-blue-600">Info</a>
+            <a href="#" class="hover:text-blue-600">Contact</a>
+          </nav>
+        </div>
+        <div class="flex items-center gap-4">
+          <select class="border border-slate-300 rounded-lg px-2 py-1 text-sm bg-white focus:outline-none">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+            <option value="mr">Marathi</option>
+          </select>
+          <button class="relative p-2 text-slate-600 hover:text-blue-600">
+            <i class="fa-regular fa-bell text-xl"></i>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
+        </div>
+      </header>
+
+      <main class="p-6 space-y-6">
+
+        <div class="bg-gradient-to-r from-slate-900 to-blue-900 text-white rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-md">
+          <div>
+            <h1 id="greeting-text" class="text-2xl font-bold">Good Day, Rahul! Welcome back.</h1>
+            <p class="text-slate-300 text-sm mt-1">Here is what is happening across your departments today.</p>
+          </div>
+          <div class="flex gap-3">
+            <button id="punch-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-4 py-2 rounded-lg text-sm transition flex items-center gap-2">
+              <i class="fa-solid fa-clock"></i> <span id="punch-text">Punch In</span>
+            </button>
+            <button class="bg-white/10 hover:bg-white/20 text-white font-medium px-4 py-2 rounded-lg text-sm border border-white/20 transition">
+              <i class="fa-solid fa-download"></i> Export Data
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <p class="text-slate-500 text-xs font-semibold uppercase">Total Payroll (Current Month)</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-2">₹24,50,000</h3>
+            <p class="text-emerald-600 text-xs mt-2 font-medium"><i class="fa-solid fa-arrow-up"></i> +4.5% vs last month</p>
+          </div>
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <p class="text-slate-500 text-xs font-semibold uppercase">Today Attendance</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-2">88 / 95</h3>
+            <p class="text-slate-500 text-xs mt-2">92.6% Present Rate</p>
+          </div>
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <p class="text-slate-500 text-xs font-semibold uppercase">Pending Leaves</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-2">4 Requests</h3>
+            <p class="text-amber-600 text-xs mt-2 font-medium"><i class="fa-solid fa-triangle-exclamation"></i> Action required</p>
+          </div>
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <p class="text-slate-500 text-xs font-semibold uppercase">Dept Task Progress</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-2">78%</h3>
+            <div class="w-full bg-slate-100 rounded-full h-2 mt-3">
+              <div class="bg-blue-600 h-2 rounded-full" style="width: 78%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm lg:col-span-2">
+            <h4 class="font-bold text-slate-800 text-base mb-4">Financial & Expense Analytics</h4>
+            <div class="h-64">
+              <canvas id="financialChart"></canvas>
+            </div>
+          </div>
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <h4 class="font-bold text-slate-800 text-base mb-4">Attendance Visual Breakdown</h4>
+            <div class="h-64 flex items-center justify-center">
+              <canvas id="attendanceChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <div class="flex justify-between items-center mb-4">
+              <h4 class="font-bold text-slate-800">Pending Operational Tasks</h4>
+              <button onclick="addTask()" class="text-xs text-blue-600 hover:underline font-semibold">+ Add Task</button>
+            </div>
+            <ul id="task-list" class="space-y-3">
+              <li class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" class="w-4 h-4 text-blue-600 rounded">
+                  <span class="text-sm font-medium text-slate-700">Approve Monthly Payroll</span>
+                </div>
+                <span class="px-2 py-1 bg-red-100 text-red-600 text-xs font-semibold rounded">High Priority</span>
+              </li>
+              <li class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" class="w-4 h-4 text-blue-600 rounded">
+                  <span class="text-sm font-medium text-slate-700">Quarterly Department Review</span>
+                </div>
+                <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded">Medium Priority</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <h4 class="font-bold text-slate-800 mb-4">Recent Employee Records</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-600">
+                <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
+                  <tr>
+                    <th class="p-2">Name</th>
+                    <th class="p-2">Role</th>
+                    <th class="p-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr>
+                    <td class="p-2 font-medium text-slate-800">Amit Verma</td>
+                    <td class="p-2">Java Backend Dev</td>
+                    <td class="p-2"><span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">Active</span></td>
+                  </tr>
+                  <tr>
+                    <td class="p-2 font-medium text-slate-800">Priya Kadam</td>
+                    <td class="p-2">UI/UX Designer</td>
+                    <td class="p-2"><span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">Active</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
     </div>
-
-    <!-- ── STEP 2: OTP ─────────────────────── -->
-    <div class="login-step" id="step2">
-      <div class="login-title">Verify OTP</div>
-      <div class="login-subtitle">
-        A 6-digit OTP has been sent to<br>
-        <strong id="otpEmailDisplay" style="color:var(--gold)"></strong>
-      </div>
-
-      <!-- 6 digit boxes -->
-      <div class="otp-row">
-        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
-        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-      </div>
-
-      <div class="otp-timer">
-        Code expires in <span id="otpTimerVal">60</span>s &nbsp;
-        <button class="otp-resend" id="resendBtn">Resend OTP</button>
-      </div>
-
-      <span class="l-error" id="otpError"></span>
-
-      <button class="btn-login" id="btnVerifyOTP">Verify &amp; Login</button>
-      <button class="btn-back" id="btnBack">← Change email</button>
-    </div>
-
   </div>
-</div>
-<div class="toast-container" id="toastContainer"></div>
-<script src="js/main.js"></script>
+
+  <script src="app.js"></script>
 </body>
 </html>
