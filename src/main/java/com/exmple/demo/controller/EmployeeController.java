@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@CrossOrigin(origins = "*") // Local localhost:5173 + Cloud Deployment (Render/Vercel) dono allow honge
+@CrossOrigin(origins = "*") // Localhost + Render Cloud Deployment dono allow honge
 public class EmployeeController {
 
     private final EmployeeRepository repository;
@@ -22,49 +22,18 @@ public class EmployeeController {
     // 1. THYMELEAF HTML VIEW MAPPINGS
     // ==========================================
 
-    // Homepage: List all employees
+    // Purana HTML Homepage mapping
     @GetMapping("/")
     public String viewHomePage(Model model) {
         model.addAttribute("listEmployees", repository.findAll());
         return "index";
     }
 
-    // Show Form to Add New Employee
-    @GetMapping("/showNewEmployeeForm")
-    public String showNewEmployeeForm(Model model) {
-        Employee employee = new Employee();
-        model.addAttribute("employee", employee);
-        return "new_employee";
-    }
-
-    // Save Employee from HTML Form
-    @PostMapping("/saveEmployee")
-    public String saveEmployee(@ModelAttribute("employee") Employee employee) {
-        repository.save(employee);
-        return "redirect:/";
-    }
-
-    // Show Form to Update Employee
-    @GetMapping("/showFormForUpdate/{id}")
-    public String showFormForUpdate(@PathVariable(value = "id") long id, Model model) {
-        Employee employee = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid employee Id: " + id));
-        model.addAttribute("employee", employee);
-        return "update_employee";
-    }
-
-    // Delete Employee via HTML Link
-    @GetMapping("/deleteEmployee/{id}")
-    public String deleteEmployee(@PathVariable(value = "id") long id) {
-        repository.deleteById(id);
-        return "redirect:/";
-    }
-
     // ==========================================
-    // 2. REACT FRONTEND REST API ENDPOINTS (JSON)
+    // 2. REACT FRONTEND KE LIYE REST API ENDPOINTS
     // ==========================================
 
-    // Fetch all employees for React
+    // Fetch all employees for React (JSON Format)
     @GetMapping("/api/employees")
     @ResponseBody
     public List<Employee> getEmployeesApi() {
@@ -76,20 +45,5 @@ public class EmployeeController {
     @ResponseBody
     public String verifyOtp(@RequestBody String body) {
         return "{\"success\": true, \"token\": \"jwt-session-token-xyz\"}";
-    }
-
-    // Add / Save Employee via React
-    @PostMapping("/api/employees")
-    @ResponseBody
-    public Employee createEmployeeApi(@RequestBody Employee employee) {
-        return repository.save(employee);
-    }
-
-    // Delete Employee via React
-    @DeleteMapping("/api/employees/{id}")
-    @ResponseBody
-    public String deleteEmployeeApi(@PathVariable(value = "id") long id) {
-        repository.deleteById(id);
-        return "{\"message\": \"Employee deleted successfully\"}";
     }
 }
