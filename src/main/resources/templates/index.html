@@ -1,123 +1,138 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employee Management System</title>
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Custom Theme -->
-  <link rel="stylesheet" th:href="@{/style.css}">
-  <style>
-    /* Inline fallback for local serve */
-    body { font-family: 'Poppins', sans-serif; }
-  </style>
+  <title>Zenith Insights - Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
-  <!-- ── Navbar ───────────────────────────── -->
-  <nav class="ems-navbar">
-    <div class="brand">⚡ EMS Dashboard</div>
-    <span class="nav-tag">Employee Portal</span>
-  </nav>
-
-  <!-- ── Page Wrapper ─────────────────────── -->
-  <div class="page-wrapper">
-
-    <!-- Page Header -->
-    <div class="page-header">
-      <div>
-        <h1 class="page-title">Employee <span>Directory</span></h1>
-        <p class="page-subtitle">Manage your team — add, view, and remove records.</p>
+  <div class="dashboard-container">
+    
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-icon"><i class="fa-solid fa-cube"></i></div>
       </div>
-      <a th:href="@{/showNewEmployeeForm}" class="btn-neon btn-primary-neon">
-        ＋ Add Employee
-      </a>
-    </div>
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active"><i class="fa-solid fa-border-all"></i></a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-chart-line"></i></a>
+        <a href="#" class="nav-item"><i class="fa-regular fa-comment"></i></a>
+        <a href="#" class="nav-item"><i class="fa-regular fa-user"></i></a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i></a>
+      </nav>
+    </aside>
 
-    <!-- Stats Row -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-icon purple">👥</div>
-        <div>
-          <div class="stat-value" th:text="${listEmployees != null ? listEmployees.size() : 0}">0</div>
-          <div class="stat-label">Total Employees</div>
+    <main class="main-content">
+      
+      <header class="top-header">
+        <div class="search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Search something...">
         </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon cyan">🏢</div>
-        <div>
-          <div class="stat-value">—</div>
-          <div class="stat-label">Departments</div>
+        <div class="user-profile">
+          <i class="fa-regular fa-bell icon"></i>
+          <div class="profile-info">
+            <img src="https://i.pravatar.cc/100?img=12" alt="User Avatar">
+            <div>
+              <h4>Jane Danom</h4>
+              <p>Profile</p>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon pink">📋</div>
-        <div>
-          <div class="stat-value">Active</div>
-          <div class="stat-label">Status</div>
+      </header>
+
+      <div class="dashboard-grid">
+        
+        <div class="card card-purple">
+          <div class="card-header">
+            <span>15K <small class="badge">+2.54%</small></span>
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </div>
+          <p>Users</p>
+          <div class="sparkline-chart">
+            <canvas id="sparkline1"></canvas>
+          </div>
         </div>
+
+        <div class="card card-orange">
+          <div class="card-header">
+            <span>28.9% <small class="badge">-2.54%</small></span>
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </div>
+          <p>Conversion Rate</p>
+          <div class="bar-sparkline">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div class="card card-coral">
+          <div class="card-header">
+            <span>24K <small class="badge">+2.54%</small></span>
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </div>
+          <p>Sessions</p>
+          <div class="sparkline-chart">
+            <canvas id="sparkline2"></canvas>
+          </div>
+        </div>
+
+        <div class="card card-white reviews-card">
+          <div class="card-header">
+            <h3>Reviews</h3>
+          </div>
+          <div class="radial-chart-container">
+            <div class="radial-center">
+              <h2>3272</h2>
+              <p>Reviews</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-white main-chart-card">
+          <div class="chart-header">
+            <div>
+              <h3>Analytic</h3>
+              <h2>$ 956,124.78</h2>
+              <p class="growth"><i class="fa-solid fa-arrow-up"></i> 22% <span>Since Last Month</span></p>
+            </div>
+            <div class="chart-filter">
+              <button class="active">This Year</button>
+              <button>Last Year</button>
+            </div>
+          </div>
+          <div class="main-bar-chart">
+            <canvas id="analyticsBarChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card card-white recent-uploads">
+          <h3>Latest Upload</h3>
+          <ul class="upload-list">
+            <li>
+              <div class="thumb"></div>
+              <div class="info">
+                <h4>Animal & Natural</h4>
+                <p>10:00 am, 24 June, 2026</p>
+              </div>
+              <span class="status-done">Done</span>
+            </li>
+            <li>
+              <div class="thumb"></div>
+              <div class="info">
+                <h4>Animal & Natural</h4>
+                <p>10:00 am, 24 June, 2026</p>
+              </div>
+              <span class="status-done">Done</span>
+            </li>
+          </ul>
+        </div>
+
       </div>
-    </div>
-
-    <!-- Employee Table Card -->
-    <div class="glass-card">
-
-      <!-- Table: has employees -->
-      <div class="table-wrapper" th:if="${listEmployees != null and !listEmployees.isEmpty()}">
-        <table class="ems-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Employee</th>
-              <th>Email</th>
-              <th>Department</th>
-              <th>Salary</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="emp : ${listEmployees}">
-              <td th:text="${emp.id}"></td>
-              <td>
-                <div class="avatar-cell">
-                  <div class="avatar"
-                       th:text="${emp.name != null and emp.name.length() > 0 ? emp.name.substring(0,1) : '?'}">
-                  </div>
-                  <span th:text="${emp.name}"></span>
-                </div>
-              </td>
-              <td th:text="${emp.email}"></td>
-              <td><span class="dept-badge" th:text="${emp.department}"></span></td>
-              <td class="salary-cell">
-                ₹ <span th:text="${#numbers.formatDecimal(emp.salary, 1, 'COMMA', 2, 'POINT')}"></span>
-              </td>
-              <td>
-                <a th:href="@{/deleteEmployee/{id}(id=${emp.id})}"
-                   class="btn-neon btn-danger-neon"
-                   onclick="return confirm('Delete this employee?')">
-                  🗑 Delete
-                </a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Empty State -->
-      <div class="empty-state" th:if="${listEmployees == null or listEmployees.isEmpty()}">
-        <div class="empty-icon">👤</div>
-        <p>No employees found. Start by adding your first team member.</p>
-        <a th:href="@{/showNewEmployeeForm}" class="btn-neon btn-primary-neon">＋ Add First Employee</a>
-      </div>
-
-    </div>
-    <!-- /glass-card -->
-
+    </main>
   </div>
-  <!-- /page-wrapper -->
 
+  <script src="js/main.js"></script>
 </body>
 </html>
