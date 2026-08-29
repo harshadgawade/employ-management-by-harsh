@@ -6,7 +6,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
+@CrossOrigin(origins = "http://localhost:5173") // React access permit
 public class EmployeeController {
 
     private final EmployeeRepository repository;
@@ -15,32 +18,26 @@ public class EmployeeController {
         this.repository = repository;
     }
 
-    // Homepage: List all employees
+    // Purana HTML Homepage mapping
     @GetMapping("/")
     public String viewHomePage(Model model) {
         model.addAttribute("listEmployees", repository.findAll());
         return "index";
     }
 
-    // Show Form to Add New Employee
-    @GetMapping("/showNewEmployeeForm")
-    public String showNewEmployeeForm(Model model) {
-        Employee employee = new Employee();
-        model.addAttribute("employee", employee);
-        return "add_employee";
+    // ==========================================
+    // REACT FRONTEND KE LIYE NAYE API ENDPOINTS
+    // ==========================================
+
+    @GetMapping("/api/employees")
+    @ResponseBody // Dynamic JSON data render karega (HTML view nahi)
+    public List<Employee> getEmployeesApi() {
+        return repository.findAll();
     }
 
-    // Save Employee to Database
-    @PostMapping("/saveEmployee")
-    public String saveEmployee(@ModelAttribute("employee") Employee employee) {
-        repository.save(employee);
-        return "redirect:/";
-    }
-
-    // Delete Employee
-    @GetMapping("/deleteEmployee/{id}")
-    public String deleteEmployee(@PathVariable(value = "id") long id) {
-        repository.deleteById(id);
-        return "redirect:/";
+    @PostMapping("/api/auth/verify-otp")
+    @ResponseBody
+    public String verifyOtp(@RequestBody String body) {
+        return "{\"success\": true, \"token\": \"jwt-session-token-xyz\"}";
     }
 }
