@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### H2 Database Files — keep folder, ignore data files ###
+database/*.mv.db
+database/*.trace.db
+database/*.lock.db

@@ -1,0 +1,2 @@
+# This file keeps the database/ folder tracked by git.
+# The actual database files (*.mv.db, *.trace.db) are excluded via .gitignore
