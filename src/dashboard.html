@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR Dashboard — EMS Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
+    .dash-section.active { animation: fadeInUp 0.35s ease forwards; }
+
+    /* org chart */
+    .org-chart { text-align: center; }
+    .org-node {
+      display: inline-block; padding: 10px 18px;
+      background: rgba(245,197,24,0.08); border: 1px solid rgba(245,197,24,0.3);
+      border-radius: 10px; font-size: 0.8rem; font-weight: 600; color: var(--gold);
+      position: relative; margin: 6px;
+    }
+    .org-level { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 10px 0; position: relative; }
+    .org-connector { text-align: center; color: var(--text-muted); font-size: 1rem; line-height: 1; }
+
+    /* social feed */
+    .feed-item {
+      padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-avatar {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--gold), var(--emerald));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 800; color: var(--bg);
+    }
+    .feed-name  { font-size: 0.83rem; font-weight: 700; color: var(--text); }
+    .feed-body  { font-size: 0.81rem; color: var(--text-sec); margin-top: 3px; line-height: 1.5; }
+    .feed-time  { font-size: 0.68rem; color: var(--text-muted); margin-top: 5px; }
+    .feed-tag {
+      display: inline-block; font-size: 0.62rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 99px; margin-left: 6px;
+      background: var(--gold-dim); color: var(--gold);
+      border: 1px solid rgba(245,197,24,0.3);
+    }
+
+    /* report cards */
+    .report-card {
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 18px; background: rgba(245,197,24,0.03);
+      display: flex; align-items: center; gap: 14px;
+      transition: border-color var(--t), transform var(--t); cursor: pointer;
+    }
+    .report-card:hover { border-color: rgba(245,197,24,0.4); transform: translateY(-3px); }
+    .report-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-sm);
+      background: var(--gold-dim); border: 1px solid rgba(245,197,24,0.3);
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;
+    }
+    .report-name { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .report-desc { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
+    .report-dl   { margin-left: auto; font-size: 0.78rem; color: var(--emerald-light); font-weight: 600; }
+
+    /* holiday list */
+    .holiday-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .holiday-item:last-child { border-bottom: none; }
+    .holiday-date {
+      min-width: 44px; text-align: center;
+      background: var(--gold-dim); border: 1px solid rgba(245,197,24,0.3);
+      border-radius: var(--radius-sm); padding: 6px 4px;
+      font-size: 0.7rem; font-weight: 700; color: var(--gold); line-height: 1.3;
+    }
+    .holiday-name { font-size: 0.83rem; font-weight: 500; color: var(--text); }
+    .holiday-type { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* info/policy cards */
+    .policy-card {
+      border: 1px solid var(--border-em); border-radius: var(--radius-md);
+      padding: 18px; background: var(--emerald-dim); transition: border-color var(--t);
+    }
+    .policy-card:hover { border-color: rgba(16,185,129,0.4); }
+    .policy-title { font-size: 0.88rem; font-weight: 700; color: var(--emerald-light); margin-bottom: 6px; }
+    .policy-body  { font-size: 0.78rem; color: var(--text-sec); line-height: 1.6; }
+
+    /* contact cards */
+    .contact-card {
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 18px; background: rgba(245,197,24,0.03);
+      display: flex; gap: 14px; align-items: center; transition: border-color var(--t);
+    }
+    .contact-card:hover { border-color: rgba(245,197,24,0.35); }
+    .contact-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--emerald));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 800; color: var(--bg); flex-shrink: 0;
+    }
+    .contact-name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+    .contact-role { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+    .contact-email{ font-size: 0.72rem; color: var(--emerald-light); margin-top: 3px; }
+    .contact-ext  { margin-left: auto; font-size: 0.78rem; color: var(--gold); font-weight: 700; }
+
+    /* salary dist bars */
+    .sal-bracket { margin-bottom: 12px; }
+    .sal-bracket-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-sec); margin-bottom: 5px; }
+
+    /* punch row */
+    .punch-log-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.8rem;
+    }
+    .punch-log-item:last-child { border-bottom: none; }
+  </style>
+</head>
+<body>
+<div class="app" id="dashApp">
+
+  <!-- ══════════════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">⚡ EMS Portal</div>
+      <div class="brand-sub">HR &amp; Department Owner</div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <div class="nav-section-label">Main</div>
+      <div class="nav-item active" data-section="home">
+        <span class="icon">🏠</span> Home
+      </div>
+      <div class="nav-item" data-section="attendance">
+        <span class="icon">📅</span> Attendance
+      </div>
+      <div class="nav-item" data-section="leave">
+        <span class="icon">🏖</span> Leave
+        <span class="nav-badge" id="leaveBadge">3</span>
+      </div>
+      <div class="nav-item" data-section="todo">
+        <span class="icon">✅</span> Tasks / To-Do
+      </div>
+
+      <div class="nav-section-label">Finance</div>
+      <div class="nav-item" data-section="finance">
+        <span class="icon">💰</span> Financial Analytics
+      </div>
+      <div class="nav-item" data-section="payroll">
+        <span class="icon">💸</span> Payroll
+      </div>
+
+      <div class="nav-section-label">People</div>
+      <div class="nav-item" data-section="employees">
+        <span class="icon">👥</span> Employee Directory
+      </div>
+      <div class="nav-item" data-section="roles">
+        <span class="icon">🔐</span> Roles &amp; Access
+      </div>
+      <div class="nav-item" data-section="feed">
+        <span class="icon">📢</span> HR Social Feed
+      </div>
+
+      <div class="nav-section-label">Other</div>
+      <div class="nav-item" data-section="schedule">
+        <span class="icon">🗓</span> Schedule &amp; Events
+      </div>
+      <div class="nav-item" data-section="reports">
+        <span class="icon">📊</span> Reports
+      </div>
+      <div class="nav-item" data-section="info">
+        <span class="icon">ℹ️</span> Info &amp; Policies
+      </div>
+      <div class="nav-item" data-section="contact">
+        <span class="icon">📞</span> Contact
+      </div>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">HG</div>
+        <div>
+          <div class="sidebar-user-name" id="sidebarName">Harsh Gawade</div>
+          <div class="sidebar-user-role" id="sidebarRole">HR Manager</div>
+        </div>
+        <button class="btn-logout" id="btnLogout" title="Logout">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════════
+       TOP BAR
+  ══════════════════════════════════════════ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="topbar-icon-btn" id="btnMenu" style="display:none">☰</button>
+      <div>
+        <div class="greeting-text" id="greetingText">Good Morning, <span>User</span>! Welcome back.</div>
+        <div style="font-size:0.7rem;color:var(--text-muted)" id="liveDate"></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <select class="lang-select" id="langSelect">
+        <option value="en">🌐 English</option>
+        <option value="hi">🇮🇳 Hindi</option>
+        <option value="mr">🟠 Marathi</option>
+      </select>
+      <div class="topbar-icon-btn" title="Notifications">
+        🔔 <span class="notif-dot"></span>
+      </div>
+      <div class="topbar-icon-btn" title="Current time" style="font-size:0.75rem;min-width:80px;width:auto;padding:0 10px" id="liveClock">
+        --:--:--
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════════════ -->
+  <main class="main">
+
+    <!-- ╔══════════════════════════════════════
+         § HOME — Overview Dashboard
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section active" id="sec-home">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Dashboard <span>Overview</span></div>
+          <div class="section-sub">Real-time snapshot of your organisation</div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="Dashboard.renderHome()">🔄 Refresh</button>
+      </div>
+
+      <!-- KPI Row -->
+      <div class="grid-4" style="margin-bottom:24px">
+        <div class="card kpi-card">
+          <div class="kpi-icon gold">👥</div>
+          <div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+            <div class="kpi-label">Total Employees</div>
+            <div class="kpi-trend up">↑ 2 this month</div>
+          </div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-icon emerald">✅</div>
+          <div>
+            <div class="kpi-value" id="kpiPresent">0</div>
+            <div class="kpi-label">Present Today</div>
+            <div class="kpi-trend up">↑ 92% rate</div>
+          </div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-icon orange">🏖</div>
+          <div>
+            <div class="kpi-value" id="kpiLeave">0</div>
+            <div class="kpi-label">On Leave</div>
+            <div class="kpi-trend down">↓ 1 pending</div>
+          </div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-icon blue">💰</div>
+          <div>
+            <div class="kpi-value" id="kpiPayroll">₹0</div>
+            <div class="kpi-label">Monthly Payroll</div>
+            <div class="kpi-trend up">↑ 3.2% vs last month</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dept Progress + Punch In -->
+      <div class="grid-2" style="margin-bottom:24px">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">📈</span> Department Work Progress</div>
+          <div id="deptProgress"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">⏱</span> Time Enroll &amp; Exit Logger</div>
+          <div class="punch-card">
+            <div class="punch-clock" id="liveClock2"></div>
+            <div class="punch-date" id="liveDate2"></div>
+            <button class="punch-btn in" id="punchBtn">🟢 Punch In</button>
+            <div class="punch-status" id="punchStatus">Not punched in yet today.</div>
+          </div>
+          <div class="divider"></div>
+          <div class="card-title" style="margin-top:4px"><span class="ct-icon">📋</span> Today's Log</div>
+          <div>
+            <div class="punch-log-item"><span>Kiran Patil</span><span style="color:var(--emerald-light)">09:02 AM ✓</span></div>
+            <div class="punch-log-item"><span>Priya Sharma</span><span style="color:var(--emerald-light)">09:18 AM ✓</span></div>
+            <div class="punch-log-item"><span>Anjali Mehta</span><span style="color:var(--gold)">09:41 AM (Late)</span></div>
+            <div class="punch-log-item"><span>Rohan Verma</span><span style="color:#fca5a5">On Leave</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity + Leave quick view -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">📡</span> Activity Stream</div>
+          <div id="activityList"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">🏖</span> Pending Leave Requests</div>
+          <div id="leaveList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § ATTENDANCE
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-attendance">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Attendance <span>Tracker</span></div>
+          <div class="section-sub">Monthly attendance visual for the current employee</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:24px">
+        <!-- Monthly visual -->
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">📅</span> Monthly Attendance Grid</div>
+          <div class="attendance-grid" id="attendanceGrid"></div>
+          <div class="att-legend">
+            <div class="att-legend-item"><div class="att-dot p"></div> Present</div>
+            <div class="att-legend-item"><div class="att-dot a"></div> Absent</div>
+            <div class="att-legend-item"><div class="att-dot l"></div> Late</div>
+            <div class="att-legend-item"><div class="att-dot h"></div> Half Day</div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">📊</span> Attendance Summary</div>
+          <div style="margin-bottom:10px">
+            <div class="progress-label"><span>Present Days</span><span>22</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:0%" data-target="88"></div></div>
+            <div class="progress-label"><span>Late Arrivals</span><span>3</span></div>
+            <div class="progress-track"><div class="progress-fill red" style="width:0%" data-target="12"></div></div>
+            <div class="progress-label"><span>Half Days</span><span>2</span></div>
+            <div class="progress-track"><div class="progress-fill blue" style="width:0%" data-target="8"></div></div>
+            <div class="progress-label"><span>Absent</span><span>1</span></div>
+            <div class="progress-track"><div class="progress-fill purple" style="width:0%" data-target="4"></div></div>
+          </div>
+          <div class="divider"></div>
+          <div class="card-title" style="margin-top:8px"><span class="ct-icon">⏰</span> Leave Balance</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+            <div style="background:var(--emerald-dim);border:1px solid var(--border-em);border-radius:var(--radius-md);padding:12px;text-align:center">
+              <div style="font-size:1.4rem;font-weight:700;color:var(--emerald-light)">8</div>
+              <div style="font-size:0.7rem;color:var(--text-muted)">Casual Leave</div>
+            </div>
+            <div style="background:var(--gold-dim);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;text-align:center">
+              <div style="font-size:1.4rem;font-weight:700;color:var(--gold)">5</div>
+              <div style="font-size:0.7rem;color:var(--text-muted)">Sick Leave</div>
+            </div>
+            <div style="background:var(--blue-dim);border:1px solid rgba(59,130,246,0.25);border-radius:var(--radius-md);padding:12px;text-align:center">
+              <div style="font-size:1.4rem;font-weight:700;color:#93c5fd">12</div>
+              <div style="font-size:0.7rem;color:var(--text-muted)">Earned Leave</div>
+            </div>
+            <div style="background:var(--orange-dim);border:1px solid rgba(249,115,22,0.25);border-radius:var(--radius-md);padding:12px;text-align:center">
+              <div style="font-size:1.4rem;font-weight:700;color:#fdba74">2</div>
+              <div style="font-size:0.7rem;color:var(--text-muted)">Optional Leave</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full team attendance table -->
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">👥</span> Team Attendance — Today</div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Employee</th><th>Dept</th><th>Punch In</th><th>Punch Out</th><th>Hours</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><div class="emp-avatar-cell"><div class="emp-avatar">HG</div>Harsh Gawade</div></td><td>Engineering</td><td>09:02 AM</td><td>—</td><td>—</td><td><span class="status-badge active">Present</span></td></tr>
+              <tr><td>2</td><td><div class="emp-avatar-cell"><div class="emp-avatar">PS</div>Priya Sharma</div></td><td>Design</td><td>09:18 AM</td><td>—</td><td>—</td><td><span class="status-badge active">Present</span></td></tr>
+              <tr><td>3</td><td><div class="emp-avatar-cell"><div class="emp-avatar">RV</div>Rohan Verma</div></td><td>Marketing</td><td>—</td><td>—</td><td>—</td><td><span class="status-badge leave">On Leave</span></td></tr>
+              <tr><td>4</td><td><div class="emp-avatar-cell"><div class="emp-avatar">AM</div>Anjali Mehta</div></td><td>HR</td><td>09:41 AM</td><td>—</td><td>—</td><td><span class="status-badge" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(245,197,24,0.3)">Late</span></td></tr>
+              <tr><td>5</td><td><div class="emp-avatar-cell"><div class="emp-avatar">KP</div>Kiran Patil</div></td><td>Engineering</td><td>09:00 AM</td><td>—</td><td>—</td><td><span class="status-badge active">Present</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § LEAVE MANAGEMENT
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-leave">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Leave <span>Management</span></div>
+          <div class="section-sub">Approve, reject and track all leave requests</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">⏳</span> Pending Requests</div>
+          <div id="leaveList2"><!-- populated by JS --></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">📊</span> Leave Analytics</div>
+          <div class="sal-bracket">
+            <div class="sal-bracket-label"><span>Casual Leave Used</span><span>4 / 12 days</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:0%" data-target="33"></div></div>
+          </div>
+          <div class="sal-bracket">
+            <div class="sal-bracket-label"><span>Sick Leave Used</span><span>7 / 12 days</span></div>
+            <div class="progress-track"><div class="progress-fill red" style="width:0%" data-target="58"></div></div>
+          </div>
+          <div class="sal-bracket">
+            <div class="sal-bracket-label"><span>Earned Leave Used</span><span>3 / 20 days</span></div>
+            <div class="progress-track"><div class="progress-fill blue" style="width:0%" data-target="15"></div></div>
+          </div>
+          <div class="divider"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+            <div class="card kpi-card" style="flex:1;padding:14px">
+              <div class="kpi-icon gold">✅</div>
+              <div><div class="kpi-value" style="font-size:1.3rem">18</div><div class="kpi-label">Approved</div></div>
+            </div>
+            <div class="card kpi-card" style="flex:1;padding:14px">
+              <div class="kpi-icon red">❌</div>
+              <div><div class="kpi-value" style="font-size:1.3rem">4</div><div class="kpi-label">Rejected</div></div>
+            </div>
+            <div class="card kpi-card" style="flex:1;padding:14px">
+              <div class="kpi-icon orange">⏳</div>
+              <div><div class="kpi-value" style="font-size:1.3rem">3</div><div class="kpi-label">Pending</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § TASKS / TO-DO
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-todo">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Tasks &amp; <span>To-Do</span></div>
+          <div class="section-sub">Priority-based task management with due dates</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">📝</span> My Tasks</div>
+          <div id="todoList"></div>
+          <div class="todo-add-row mt-4">
+            <input class="todo-input" id="todoInput" placeholder="Add a new task…">
+            <button class="btn btn-gold btn-sm" id="btnAddTodo">＋ Add</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">🏢</span> Organisation Hierarchy</div>
+          <div class="org-chart">
+            <div class="org-level">
+              <div class="org-node">🏛 CEO / Director</div>
+            </div>
+            <div class="org-connector">│</div>
+            <div class="org-level">
+              <div class="org-node">👔 HR Manager</div>
+              <div class="org-node">💼 Finance Head</div>
+              <div class="org-node">⚙️ Tech Lead</div>
+            </div>
+            <div class="org-connector">│</div>
+            <div class="org-level">
+              <div class="org-node">👩 HR Executive</div>
+              <div class="org-node">📊 Analyst</div>
+              <div class="org-node">💻 Senior Dev</div>
+              <div class="org-node">🎨 UI/UX Lead</div>
+              <div class="org-node">📣 Mktg Lead</div>
+            </div>
+            <div class="org-connector">│</div>
+            <div class="org-level">
+              <div class="org-node" style="font-size:0.72rem;opacity:0.7">Staff / Interns</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § FINANCIAL ANALYTICS
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-finance">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Financial <span>Analytics</span></div>
+          <div class="section-sub">Cash flow, expenses, income and salary distribution</div>
+        </div>
+      </div>
+
+      <!-- KPI row -->
+      <div class="grid-4" style="margin-bottom:24px">
+        <div class="card kpi-card">
+          <div class="kpi-icon gold">💰</div>
+          <div><div class="kpi-value">₹48.7L</div><div class="kpi-label">Monthly Revenue</div><div class="kpi-trend up">↑ 6.8%</div></div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-icon emerald">📉</div>
+          <div><div class="kpi-value">₹20.5L</div><div class="kpi-label">Total Expenses</div><div class="kpi-trend down">↑ 2.1%</div></div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-icon blue">🏦</div>
+          <div><div class="kpi-value">₹28.2L</div><div class="kpi-label">Net Profit</div><div class="kpi-trend up">↑ 11.4%</div></div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-icon orange">📊</div>
+          <div><div class="kpi-value">58%</div><div class="kpi-label">Budget Used</div><div class="kpi-trend up">On Track</div></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:24px">
+        <!-- Salary chart -->
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">💸</span> Monthly Payroll Trend</div>
+          <div class="bar-chart" id="salaryChart"></div>
+          <div style="font-size:0.68rem;color:var(--text-muted);text-align:center;margin-top:8px">Monthly payroll outlay (₹)</div>
+        </div>
+        <!-- Expense chart -->
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">📉</span> Operational Expenses</div>
+          <div class="bar-chart" id="expenseChart"></div>
+          <div style="font-size:0.68rem;color:var(--text-muted);text-align:center;margin-top:8px">Monthly operational expenses (₹)</div>
+        </div>
+      </div>
+
+      <!-- Salary distribution -->
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">📊</span> Salary Distribution by Bracket</div>
+        <div class="grid-2" style="margin-top:8px">
+          <div>
+            <div class="sal-bracket">
+              <div class="sal-bracket-label"><span>Below ₹50,000</span><span>2 employees</span></div>
+              <div class="progress-track"><div class="progress-fill blue" style="width:0%" data-target="25"></div></div>
+            </div>
+            <div class="sal-bracket">
+              <div class="sal-bracket-label"><span>₹50,000 – ₹80,000</span><span>3 employees</span></div>
+              <div class="progress-track"><div class="progress-fill" style="width:0%" data-target="37"></div></div>
+            </div>
+            <div class="sal-bracket">
+              <div class="sal-bracket-label"><span>₹80,000 – ₹1,00,000</span><span>2 employees</span></div>
+              <div class="progress-track"><div class="progress-fill red" style="width:0%" data-target="25"></div></div>
+            </div>
+            <div class="sal-bracket">
+              <div class="sal-bracket-label"><span>Above ₹1,00,000</span><span>1 employee</span></div>
+              <div class="progress-track"><div class="progress-fill purple" style="width:0%" data-target="13"></div></div>
+            </div>
+          </div>
+          <div>
+            <div class="card-title"><span class="ct-icon">🏢</span> Dept Budget Utilisation</div>
+            <div class="sal-bracket">
+              <div class="sal-bracket-label"><span>Engineering</span><span>78%</span></div>
+              <div class="progress-track"><div class="progress-fill" style="width:0%" data-target="78"></div></div>
+            </div>
+            <div class="sal-bracket">
+              <div class="sal-bracket-label"><span>Marketing</span><span>62%</span></div>
+              <div class="progress-track"><div class="progress-fill blue" style="width:0%" data-target="62"></div></div>
+            </div>
+            <div class="sal-bracket">
+              <div class="sal-bracket-label"><span>Design</span><span>55%</span></div>
+              <div class="progress-track"><div class="progress-fill red" style="width:0%" data-target="55"></div></div>
+            </div>
+            <div class="sal-bracket">
+              <div class="sal-bracket-label"><span>HR &amp; Admin</span><span>91%</span></div>
+              <div class="progress-track"><div class="progress-fill" style="width:0%" data-target="91"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § PAYROLL
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-payroll">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Payroll <span>Processing</span></div>
+          <div class="section-sub">Monthly salary slips, deductions &amp; payout status</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-em btn-sm" onclick="Toast.show('Processing all payroll…','info')">⚡ Process All</button>
+          <button class="btn btn-ghost btn-sm" onclick="Toast.show('Exporting payroll report…','info')">📥 Export CSV</button>
+        </div>
+      </div>
+
+      <div class="grid-4" style="margin-bottom:24px">
+        <div class="card kpi-card">
+          <div class="kpi-icon gold">💸</div>
+          <div><div class="kpi-value" id="payrollTotal">₹0</div><div class="kpi-label">Total Payout</div></div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-icon emerald">✅</div>
+          <div><div class="kpi-value">4</div><div class="kpi-label">Paid</div></div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-icon orange">⏳</div>
+          <div><div class="kpi-value">2</div><div class="kpi-label">Pending</div></div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-icon blue">📄</div>
+          <div><div class="kpi-value">Aug '26</div><div class="kpi-label">Pay Period</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">📋</span> Payroll Register — August 2026</div>
+        <div id="payrollList"></div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § EMPLOYEE DIRECTORY
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-employees">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Employee <span>Directory</span></div>
+          <div class="section-sub">Search, filter and manage all employee records</div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="Toast.show('Add employee form — coming soon!','info')">＋ Add Employee</button>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;padding:14px 18px">
+        <div class="search-bar">
+          <span class="icon">🔍</span>
+          <input id="empSearch" placeholder="Search by name, department or role… (Ctrl+K)" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th><th>Employee</th><th>Department</th>
+                <th>Role</th><th>Salary</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="empTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § ROLES & ACCESS (RBAC)
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-roles">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Roles &amp; <span>Access Control</span></div>
+          <div class="section-sub">Role-based permission matrix for the organisation</div>
+        </div>
+      </div>
+      <div class="grid-2" id="rolesGrid"></div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § HR SOCIAL FEED
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-feed">
+      <div class="section-header">
+        <div>
+          <div class="section-title">HR <span>Social Feed</span></div>
+          <div class="section-sub">Company announcements, achievements &amp; peer shout-outs</div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="Toast.show('Post announcement — coming soon!','info')">📣 Post</button>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">📢</span> Announcements</div>
+          <div class="feed-item">
+            <div class="feed-avatar">HR</div>
+            <div>
+              <div class="feed-name">HR Department <span class="feed-tag">Announcement</span></div>
+              <div class="feed-body">New WFH policy effective from September 1st. Employees can work from home on Wednesdays and Fridays. Please review the updated handbook.</div>
+              <div class="feed-time">Today, 10:00 AM</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <div class="feed-avatar">SA</div>
+            <div>
+              <div class="feed-name">Admin Team <span class="feed-tag">Policy</span></div>
+              <div class="feed-body">Office timings updated to 9:30 AM – 6:30 PM starting Monday. Please update your punch-in schedules accordingly.</div>
+              <div class="feed-time">Yesterday, 4:15 PM</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <div class="feed-avatar">HG</div>
+            <div>
+              <div class="feed-name">Harsh Gawade <span class="feed-tag">Achievement</span></div>
+              <div class="feed-body">🎉 Congratulations to Kiran Patil for completing 2 years with the company! Thank you for your dedication and hard work.</div>
+              <div class="feed-time">Aug 27, 2026</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="ct-icon">🎂</span> Upcoming Milestones</div>
+          <div class="feed-item">
+            <div class="feed-avatar" style="background:linear-gradient(135deg,#f97316,#fde68a)">KP</div>
+            <div>
+              <div class="feed-name">Kiran Patil</div>
+              <div class="feed-body">🎂 Birthday — September 3rd</div>
+              <div class="feed-time">5 days away</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <div class="feed-avatar" style="background:linear-gradient(135deg,#8b5cf6,#a855f7)">PS</div>
+            <div>
+              <div class="feed-name">Priya Sharma</div>
+              <div class="feed-body">🏆 Work Anniversary — 3 Years on Sep 10th</div>
+              <div class="feed-time">12 days away</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <div class="feed-avatar" style="background:linear-gradient(135deg,#3b82f6,#06b6d4)">AM</div>
+            <div>
+              <div class="feed-name">Anjali Mehta</div>
+              <div class="feed-body">🎂 Birthday — September 18th</div>
+              <div class="feed-time">20 days away</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § SCHEDULE & EVENTS
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-schedule">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Schedule &amp; <span>Events</span></div>
+          <div class="section-sub">Company calendar, holidays &amp; upcoming events</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <!-- Calendar -->
+        <div class="card">
+          <div class="cal-header">
+            <button class="cal-nav-btn" onclick="Dashboard.calPrev()">‹</button>
+            <div class="cal-month" id="calMonthTitle">August 2026</div>
+            <button class="cal-nav-btn" onclick="Dashboard.calNext()">›</button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:5px;font-size:0.7rem;color:var(--text-muted)">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div> Today
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:0.7rem;color:var(--text-muted)">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald-light)"></div> Event
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:0.7rem;color:var(--text-muted)">
+              <div style="width:8px;height:8px;border-radius:50%;background:#c4b5fd"></div> Holiday
+            </div>
+          </div>
+        </div>
+
+        <!-- Holidays + Events -->
+        <div>
+          <div class="card" style="margin-bottom:18px">
+            <div class="card-title"><span class="ct-icon">🎌</span> Upcoming Holidays</div>
+            <div class="holiday-item">
+              <div class="holiday-date"><div>31</div><div>Aug</div></div>
+              <div><div class="holiday-name">Ganesh Chaturthi</div><div class="holiday-type">National Holiday</div></div>
+            </div>
+            <div class="holiday-item">
+              <div class="holiday-date"><div>2</div><div>Sep</div></div>
+              <div><div class="holiday-name">Ganesh Chaturthi (2nd Day)</div><div class="holiday-type">Regional Holiday</div></div>
+            </div>
+            <div class="holiday-item">
+              <div class="holiday-date"><div>2</div><div>Oct</div></div>
+              <div><div class="holiday-name">Gandhi Jayanti</div><div class="holiday-type">National Holiday</div></div>
+            </div>
+            <div class="holiday-item">
+              <div class="holiday-date"><div>24</div><div>Oct</div></div>
+              <div><div class="holiday-name">Diwali</div><div class="holiday-type">National Holiday</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="ct-icon">📅</span> Upcoming Events</div>
+            <div class="activity-item">
+              <div class="activity-dot gold"></div>
+              <div>
+                <div class="activity-text"><strong>All-Hands Meeting</strong> — Sep 5, 10:00 AM</div>
+                <div class="activity-time">Zoom + Office | Attendance Mandatory</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot emerald"></div>
+              <div>
+                <div class="activity-text"><strong>Q3 Performance Reviews</strong> — Sep 12-14</div>
+                <div class="activity-time">HR + Department Heads</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot blue"></div>
+              <div>
+                <div class="activity-text"><strong>Team Building Activity</strong> — Sep 18</div>
+                <div class="activity-time">Off-site | All Teams</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot gold"></div>
+              <div>
+                <div class="activity-text"><strong>Diwali Celebration</strong> — Oct 24</div>
+                <div class="activity-time">Office | All Employees</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § REPORTS ENGINE
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-reports">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Reports <span>Engine</span></div>
+          <div class="section-sub">Export attendance, payroll, performance and financial reports</div>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="report-card" onclick="Toast.show('Generating Attendance Report (PDF)…','info')">
+          <div class="report-icon">📅</div>
+          <div>
+            <div class="report-name">Attendance Report</div>
+            <div class="report-desc">Monthly attendance summary — All employees</div>
+          </div>
+          <div class="report-dl">PDF ↓</div>
+        </div>
+        <div class="report-card" onclick="Toast.show('Generating Payroll Report (CSV)…','info')">
+          <div class="report-icon">💸</div>
+          <div>
+            <div class="report-name">Payroll Report</div>
+            <div class="report-desc">August 2026 salary register</div>
+          </div>
+          <div class="report-dl">CSV ↓</div>
+        </div>
+        <div class="report-card" onclick="Toast.show('Generating Performance Report (Excel)…','info')">
+          <div class="report-icon">📈</div>
+          <div>
+            <div class="report-name">Performance Report</div>
+            <div class="report-desc">Q3 appraisal metrics by department</div>
+          </div>
+          <div class="report-dl">Excel ↓</div>
+        </div>
+        <div class="report-card" onclick="Toast.show('Generating Finance Audit (PDF)…','info')">
+          <div class="report-icon">🏦</div>
+          <div>
+            <div class="report-name">Finance Audit</div>
+            <div class="report-desc">Budget utilisation &amp; expense breakdown</div>
+          </div>
+          <div class="report-dl">PDF ↓</div>
+        </div>
+        <div class="report-card" onclick="Toast.show('Generating Leave Report (CSV)…','info')">
+          <div class="report-icon">🏖</div>
+          <div>
+            <div class="report-name">Leave Report</div>
+            <div class="report-desc">Approved, rejected &amp; pending leave data</div>
+          </div>
+          <div class="report-dl">CSV ↓</div>
+        </div>
+        <div class="report-card" onclick="Toast.show('Generating Headcount Report (Excel)…','info')">
+          <div class="report-icon">👥</div>
+          <div>
+            <div class="report-name">Headcount Report</div>
+            <div class="report-desc">Employee strength by department &amp; role</div>
+          </div>
+          <div class="report-dl">Excel ↓</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § INFO & POLICIES
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-info">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Info &amp; <span>Policies</span></div>
+          <div class="section-sub">Company guidelines, operational documentation &amp; HR policies</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="policy-card">
+          <div class="policy-title">📋 Leave Policy</div>
+          <div class="policy-body">Employees are entitled to 12 casual leaves, 12 sick leaves, and 20 earned leaves per year. Leave must be applied at least 2 days in advance for planned absences. Emergency leaves must be informed within 2 hours of absence.</div>
+        </div>
+        <div class="policy-card">
+          <div class="policy-title">🏠 Work From Home Policy</div>
+          <div class="policy-body">Effective September 1, 2026: Employees may WFH on Wednesdays and Fridays. Attendance must be logged digitally. All-hands meetings and performance reviews require in-office presence.</div>
+        </div>
+        <div class="policy-card">
+          <div class="policy-title">💸 Expense Reimbursement Policy</div>
+          <div class="policy-body">Travel and business expenses up to ₹5,000 can be claimed within 7 days with receipts. Above ₹5,000 requires department head approval. Claims are processed in the next payroll cycle.</div>
+        </div>
+        <div class="policy-card">
+          <div class="policy-title">🔐 Data Privacy &amp; Security Policy</div>
+          <div class="policy-body">All employee data is confidential and governed by IT security guidelines. Access to HR systems requires 2FA. Sharing employee records externally is strictly prohibited without written HR authorisation.</div>
+        </div>
+        <div class="policy-card">
+          <div class="policy-title">📈 Performance Appraisal Cycle</div>
+          <div class="policy-body">Appraisals are conducted quarterly (March, June, September, December). KPIs are set at the start of each quarter. Self-assessment forms must be submitted 5 days before the review date.</div>
+        </div>
+        <div class="policy-card">
+          <div class="policy-title">👔 Code of Conduct</div>
+          <div class="policy-body">All employees must maintain professional conduct at all times. Harassment, discrimination, and workplace misconduct are strictly prohibited. Violations must be reported to HR within 24 hours.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ╔══════════════════════════════════════
+         § CONTACT
+    ══════════════════════════════════════╗ -->
+    <section class="dash-section" id="sec-contact">
+      <div class="section-header">
+        <div>
+          <div class="section-title">HR <span>Directory</span></div>
+          <div class="section-sub">Internal contacts, IT support &amp; urgent escalations</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <div class="card-title" style="margin-bottom:14px"><span>👥</span> HR Team</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="contact-card">
+              <div class="contact-avatar">HG</div>
+              <div><div class="contact-name">Harsh Gawade</div><div class="contact-role">HR Manager</div><div class="contact-email">harsh@company.com</div></div>
+              <div class="contact-ext">Ext: 101</div>
+            </div>
+            <div class="contact-card">
+              <div class="contact-avatar">AM</div>
+              <div><div class="contact-name">Anjali Mehta</div><div class="contact-role">HR Executive</div><div class="contact-email">anjali@company.com</div></div>
+              <div class="contact-ext">Ext: 102</div>
+            </div>
+            <div class="contact-card">
+              <div class="contact-avatar">PS</div>
+              <div><div class="contact-name">Priya Sharma</div><div class="contact-role">HR Coordinator</div><div class="contact-email">priya@company.com</div></div>
+              <div class="contact-ext">Ext: 103</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:14px"><span>🛠</span> IT &amp; Support</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="contact-card">
+              <div class="contact-avatar" style="background:linear-gradient(135deg,#3b82f6,#06b6d4)">IT</div>
+              <div><div class="contact-name">IT Helpdesk</div><div class="contact-role">Technical Support</div><div class="contact-email">it@company.com</div></div>
+              <div class="contact-ext">Ext: 200</div>
+            </div>
+            <div class="contact-card">
+              <div class="contact-avatar" style="background:linear-gradient(135deg,#ef4444,#f97316)">🚨</div>
+              <div><div class="contact-name">Emergency Escalation</div><div class="contact-role">Urgent HR Issues</div><div class="contact-email">emergency@company.com</div></div>
+              <div class="contact-ext">Ext: 999</div>
+            </div>
+            <div class="contact-card">
+              <div class="contact-avatar" style="background:linear-gradient(135deg,#8b5cf6,#a855f7)">FN</div>
+              <div><div class="contact-name">Finance Dept</div><div class="contact-role">Payroll &amp; Reimbursements</div><div class="contact-email">finance@company.com</div></div>
+              <div class="contact-ext">Ext: 301</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /main -->
+</div><!-- /app -->
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="js/main.js"></script>
+<script>
+  /* Animate all progress bars after page render */
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.progress-fill[data-target]').forEach(b => {
+        b.style.width = b.dataset.target + '%';
+      });
+    }, 500);
+  });
+
+  /* Sync second punch clock with main clock */
+  setInterval(() => {
+    const c = document.getElementById('liveClock');
+    const c2 = document.getElementById('liveClock2');
+    const d = document.getElementById('liveDate');
+    const d2 = document.getElementById('liveDate2');
+    if (c && c2) c2.textContent = c.textContent;
+    if (d && d2) d2.textContent = d.textContent;
+  }, 1000);
+</script>
+</body>
+</html>

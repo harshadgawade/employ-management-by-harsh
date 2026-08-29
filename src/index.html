@@ -3,228 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employee Management System</title>
-
-  <!-- Google Fonts -->
+  <title>Login — HR Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-
-  <!-- Theme CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-
-  <!-- Field error style (inline for standalone) -->
   <style>
-    .field-error {
-      display: block;
-      font-size: 0.72rem;
-      color: #fca5a5;
-      margin-top: 5px;
-      padding-left: 2px;
-    }
-    .field-input.error {
-      border-color: rgba(239, 68, 68, 0.6) !important;
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .page-section { animation: fadeInUp 0.4s ease forwards; }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
+    .login-box { animation: fadeInUp 0.5s ease forwards; }
   </style>
 </head>
 <body>
+<div class="login-page">
+  <div class="login-box" id="loginBox">
 
-  <!-- ══════════════════════════════════════════
-       NAVBAR
-  ══════════════════════════════════════════ -->
-  <nav class="ems-navbar">
-    <a href="#" class="brand" data-page="list">⚡ EMS Dashboard</a>
+    <!-- Logo -->
+    <div class="login-logo">⚡ EMS Portal</div>
+    <div class="login-tagline">HR &amp; Department Owner Access Only</div>
 
-    <ul class="nav-links">
-      <li><a href="#" data-page="list"  class="active">📋 Employees</a></li>
-      <li><a href="#" data-page="add">  ➕ Add New</a></li>
-    </ul>
+    <!-- ── STEP 1: Email ───────────────────── -->
+    <div class="login-step active" id="step1">
+      <div class="login-title">Welcome Back</div>
+      <div class="login-subtitle">Enter your registered <strong>@company.com</strong> email address to continue.</div>
 
-    <span class="nav-tag">Employee Portal</span>
-  </nav>
-
-  <!-- ══════════════════════════════════════════
-       PAGE WRAPPER
-  ══════════════════════════════════════════ -->
-  <div class="page-wrapper">
-
-    <!-- ── PAGE: Employee List ─────────────── -->
-    <section id="page-list" class="page-section">
-
-      <!-- Header -->
-      <div class="page-header">
-        <div>
-          <h1 class="page-title">Employee <span>Directory</span></h1>
-          <p class="page-subtitle">Manage your team — search, sort, and remove records instantly.</p>
-        </div>
-        <a href="#" class="btn-neon btn-primary-neon" data-page="add">＋ Add Employee</a>
+      <div class="l-field">
+        <label class="l-label" for="loginEmail">Work Email</label>
+        <input class="l-input" type="email" id="loginEmail"
+               placeholder="yourname@company.com" autocomplete="email">
+        <span class="l-error" id="emailError"></span>
       </div>
 
-      <!-- Stats -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-icon purple">👥</div>
-          <div>
-            <div class="stat-value" id="statTotal">0</div>
-            <div class="stat-label">Total Employees</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon cyan">🏢</div>
-          <div>
-            <div class="stat-value">5</div>
-            <div class="stat-label">Departments</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon pink">✅</div>
-          <div>
-            <div class="stat-value">Active</div>
-            <div class="stat-label">System Status</div>
-          </div>
-        </div>
-      </div>
+      <button class="btn-login" id="btnSendOTP">Send OTP →</button>
 
-      <!-- Table Card -->
-      <div class="glass-card">
-
-        <!-- Toolbar -->
-        <div class="toolbar">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input
-              type="text"
-              id="searchInput"
-              placeholder="Search by name, email or department… (Ctrl+K)"
-              autocomplete="off"
-            >
-          </div>
-          <span class="toolbar-count">
-            Showing <span id="employeeCount">0</span> records
-          </span>
-        </div>
-
-        <!-- Table -->
-        <div class="table-wrapper" id="tableWrapper">
-          <table class="ems-table">
-            <thead>
-              <tr>
-                <th data-sort="id">    ID     <span class="sort-icon">↕</span></th>
-                <th data-sort="name">  Name   <span class="sort-icon">↕</span></th>
-                <th data-sort="email"> Email  <span class="sort-icon">↕</span></th>
-                <th data-sort="department">Dept<span class="sort-icon">↕</span></th>
-                <th data-sort="salary">Salary <span class="sort-icon">↕</span></th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="employeeTableBody"></tbody>
-          </table>
-        </div>
-
-        <!-- Empty State -->
-        <div class="empty-state hidden" id="emptyState">
-          <div class="empty-icon">👤</div>
-          <p>No employees found. Try a different search or add a new team member.</p>
-          <a href="#" class="btn-neon btn-primary-neon" data-page="add">＋ Add First Employee</a>
-        </div>
-
-      </div><!-- /glass-card -->
-    </section>
-
-    <!-- ── PAGE: Add Employee ──────────────── -->
-    <section id="page-add" class="page-section hidden">
-
-      <!-- Header -->
-      <div class="page-header">
-        <div>
-          <h1 class="page-title">New <span>Employee</span></h1>
-          <p class="page-subtitle">Fill in the details to register a new team member.</p>
-        </div>
-        <a href="#" class="btn-neon btn-secondary-neon" data-page="list">← Back to List</a>
-      </div>
-
-      <!-- Form Card -->
-      <div class="glass-card form-card">
-
-        <div class="form-card-header">
-          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:10px;">
-            All fields are required.
-          </p>
-          <hr class="neon-divider">
-        </div>
-
-        <div class="form-card-body">
-          <form id="addEmployeeForm" novalidate autocomplete="off">
-
-            <div class="field-group">
-              <label class="field-label" for="f-name">Full Name</label>
-              <input
-                id="f-name" name="name" type="text"
-                class="field-input" placeholder="e.g. Harsh Gawade" required>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="f-email">Email Address</label>
-              <input
-                id="f-email" name="email" type="email"
-                class="field-input" placeholder="e.g. harsh@company.com" required>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="f-dept">Department</label>
-              <input
-                id="f-dept" name="department" type="text"
-                class="field-input" placeholder="e.g. Engineering" required>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="f-salary">Salary (₹)</label>
-              <input
-                id="f-salary" name="salary" type="number"
-                step="0.01" min="0"
-                class="field-input" placeholder="e.g. 75000" required>
-            </div>
-
-            <div class="form-actions">
-              <button type="submit" class="btn-neon btn-success-neon">✓ Save Employee</button>
-              <a href="#" class="btn-neon btn-secondary-neon" data-page="list">✕ Cancel</a>
-            </div>
-
-          </form>
-        </div>
-      </div><!-- /form-card -->
-
-    </section>
-
-  </div><!-- /page-wrapper -->
-
-  <!-- ══════════════════════════════════════════
-       TOAST CONTAINER
-  ══════════════════════════════════════════ -->
-  <div class="toast-container" id="toastContainer"></div>
-
-  <!-- ══════════════════════════════════════════
-       CONFIRM MODAL
-  ══════════════════════════════════════════ -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-box">
-      <div class="modal-title" id="modalTitle">Confirm Action</div>
-      <div class="modal-body"  id="modalBody">Are you sure?</div>
-      <div class="modal-actions">
-        <button class="btn-neon btn-secondary-neon" id="modalCancel">Cancel</button>
-        <button class="btn-neon btn-danger-neon"    id="modalConfirm">Delete</button>
+      <div style="margin-top:20px;text-align:center;font-size:0.72rem;color:var(--text-muted)">
+        🔒 Access restricted to authorised HR personnel only
       </div>
     </div>
+
+    <!-- ── STEP 2: OTP ─────────────────────── -->
+    <div class="login-step" id="step2">
+      <div class="login-title">Verify OTP</div>
+      <div class="login-subtitle">
+        A 6-digit OTP has been sent to<br>
+        <strong id="otpEmailDisplay" style="color:var(--gold)"></strong>
+      </div>
+
+      <!-- 6 digit boxes -->
+      <div class="otp-row">
+        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+      </div>
+
+      <div class="otp-timer">
+        Code expires in <span id="otpTimerVal">60</span>s &nbsp;
+        <button class="otp-resend" id="resendBtn">Resend OTP</button>
+      </div>
+
+      <span class="l-error" id="otpError"></span>
+
+      <button class="btn-login" id="btnVerifyOTP">Verify &amp; Login</button>
+      <button class="btn-back" id="btnBack">← Change email</button>
+    </div>
+
   </div>
-
-  <!-- JS -->
-  <script src="js/main.js"></script>
-
+</div>
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
 </body>
 </html>
