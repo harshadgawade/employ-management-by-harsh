@@ -1,326 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enterprise HR & Department Owner Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-purple {
+            box-shadow: 0 0 25px -5px rgba(168, 85, 247, 0.4);
+        }
+    </style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800 min-h-screen">
+<body class="min-h-screen pb-12">
 
-  <div id="auth-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
-      <div class="text-center mb-6">
-        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
-          <i class="fa-solid fa-shield-halved text-xl"></i>
-        </div>
-        <h2 class="text-xl font-bold text-slate-900">HR & Dept Login</h2>
-        <p class="text-xs text-slate-500 mt-1">Restricted access (*@company.com domain only)</p>
-      </div>
-
-      <form id="email-step-form" onsubmit="handleSendOTP(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Corporate Email</label>
-          <input type="email" id="user-email" required placeholder="manager@company.com" 
-            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <p id="email-error" class="text-xs text-red-500 mt-1 hidden">Please enter a valid @company.com email address.</p>
-        </div>
-        <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg transition">
-          Send 6-Digit OTP
-        </button>
-      </form>
-
-      <form id="otp-step-form" onsubmit="handleVerifyOTP(event)" class="space-y-4 hidden">
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <label class="block text-xs font-semibold uppercase text-slate-600">Enter OTP</label>
-            <span id="timer-display" class="text-xs font-bold text-amber-600">00:60s</span>
-          </div>
-          <input type="text" id="otp-input" maxlength="6" pattern="[0-9]{6}" required placeholder="123456" 
-            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-center tracking-widest text-lg font-mono focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-        <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-lg transition">
-          Verify & Grant Access
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <div class="flex h-screen overflow-hidden">
-
-    <aside class="w-64 bg-slate-900 text-white flex flex-col justify-between p-4 hidden md:flex flex-shrink-0">
-      <div>
-        <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800">
-          <i class="fa-solid fa-layer-group text-2xl text-blue-500"></i>
-          <div>
-            <span class="text-lg font-bold tracking-wide block leading-none">Enterprise</span>
-            <span class="text-xs text-slate-400">HR Portal v2.4</span>
-          </div>
-        </div>
-
-        <nav class="mt-6 space-y-1">
-          <a href="#dashboard" onclick="switchTab('dashboard')" class="nav-item flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white font-medium text-sm">
-            <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
-          </a>
-          <a href="#employees" onclick="switchTab('employees')" class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">
-            <i class="fa-solid fa-user-group w-5"></i> Employee Directory
-          </a>
-          <a href="#attendance" onclick="switchTab('attendance')" class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">
-            <i class="fa-solid fa-calendar-check w-5"></i> Attendance & Leaves
-          </a>
-          <a href="#payroll" onclick="switchTab('payroll')" class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">
-            <i class="fa-solid fa-money-bill-wave w-5"></i> Payroll & Finance
-          </a>
-          <a href="#calendar" onclick="switchTab('calendar')" class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">
-            <i class="fa-solid fa-calendar-days w-5"></i> Events & Schedules
-          </a>
-          <a href="#reports" onclick="switchTab('reports')" class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg text-sm transition">
-            <i class="fa-solid fa-file-lines w-5"></i> Reports Engine
-          </a>
-        </nav>
-      </div>
-
-      <div class="border-t border-slate-800 pt-4 px-2 flex items-center justify-between">
+    <!-- Top Navigation Bar -->
+    <nav class="glass-card sticky top-0 z-50 px-8 py-4 mb-8 flex justify-between items-center border-b border-slate-800">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">
-            HR
-          </div>
-          <div>
-            <p id="nav-user-name" class="text-sm font-semibold text-slate-200">harsh gawade</p>
-            <span class="text-[10px] bg-blue-900/80 text-blue-300 px-1.5 py-0.5 rounded uppercase font-bold">HR Manager</span>
-          </div>
-        </div>
-        <button onclick="logout()" class="text-slate-400 hover:text-red-400 text-sm" title="Logout">
-          <i class="fa-solid fa-right-from-bracket"></i>
-        </button>
-      </div>
-    </aside>
-
-    <div class="flex-1 flex flex-col overflow-y-auto">
-
-      <header class="bg-white shadow-sm border-b px-6 py-3.5 flex justify-between items-center sticky top-0 z-20">
-        <div class="flex items-center gap-6">
-          <nav class="flex gap-4 text-sm font-medium text-slate-600">
-            <a href="#" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Home</a>
-            <a href="#info" onclick="alert('Company Policies & Documentation Portal')" class="hover:text-blue-600 transition">Info</a>
-            <a href="#contact" onclick="alert('IT Support: support@company.com | HR Escalation: ext-404')" class="hover:text-blue-600 transition">Contact</a>
-          </nav>
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-2.5 rounded-2xl text-white shadow-lg glow-purple">
+                <i class="fa-solid fa-users-gear text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                    HR Command Center
+                </h1>
+                <p class="text-xs text-purple-400 font-medium">Enterprise Management Platform</p>
+            </div>
         </div>
 
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-2 border border-slate-200 rounded-lg px-2.5 py-1 text-xs bg-slate-50">
-            <i class="fa-solid fa-globe text-slate-500"></i>
-            <select id="lang-selector" onchange="changeLanguage(this.value)" class="bg-transparent focus:outline-none text-slate-700 font-medium">
-              <option value="en">English</option>
-              <option value="hi">हिंदी (Hindi)</option>
-              <option value="mr">मराठी (Marathi)</option>
-            </select>
-          </div>
+        <a th:href="@{/showNewEmployeeForm}" 
+           class="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+            <i class="fa-solid fa-user-plus text-xs"></i>
+            <span>Add New Employee</span>
+        </a>
+    </nav>
 
-          <button class="relative p-2 text-slate-500 hover:text-blue-600 transition" title="Activity Feed">
-            <i class="fa-regular fa-bell text-lg"></i>
-            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
-        </div>
-      </header>
-
-      <main class="p-6 space-y-6 max-w-7xl mx-auto w-full">
-
-        <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-2xl p-6 shadow-lg border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <div class="inline-flex items-center gap-2 px-2.5 py-1 bg-white/10 rounded-full text-xs text-blue-200 mb-2 border border-white/10">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Dynamic System Active
-            </div>
-            <h1 id="greeting-text" class="text-2xl font-extrabold tracking-tight">Good Day, User! Welcome back.</h1>
-            <p id="sub-greeting-text" class="text-slate-300 text-xs mt-1">Here is your daily operational breakdown across departments.</p>
-          </div>
-
-          <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
-            <div class="text-right">
-              <p class="text-[10px] uppercase tracking-wider text-slate-400">Shift Logger</p>
-              <p id="punch-timer" class="font-mono text-sm font-bold text-blue-300">00:00:00</p>
-            </div>
-            <button id="punch-btn" onclick="togglePunch()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-4 py-2 rounded-lg text-xs transition flex items-center gap-2 shadow-md">
-              <i class="fa-solid fa-clock"></i> <span id="punch-status">Punch In</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-            <div class="flex justify-between items-start">
-              <span class="text-slate-500 text-xs font-semibold uppercase">Total Payroll Outlay</span>
-              <span class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i class="fa-solid fa-wallet"></i></span>
-            </div>
-            <h3 class="text-2xl font-bold text-slate-900 mt-2">₹24,50,000</h3>
-            <p class="text-emerald-600 text-xs mt-2 font-medium flex items-center gap-1">
-              <i class="fa-solid fa-arrow-trend-up"></i> +4.2% vs last month budget
-            </p>
-          </div>
-
-          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-            <div class="flex justify-between items-start">
-              <span class="text-slate-500 text-xs font-semibold uppercase">Today's Attendance</span>
-              <span class="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fa-solid fa-user-check"></i></span>
-            </div>
-            <h3 class="text-2xl font-bold text-slate-900 mt-2">88 / 95</h3>
-            <p class="text-slate-500 text-xs mt-2">92.6% Present | 4 On Leave</p>
-          </div>
-
-          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-            <div class="flex justify-between items-start">
-              <span class="text-slate-500 text-xs font-semibold uppercase">Leave Requests</span>
-              <span class="p-2 bg-amber-50 text-amber-600 rounded-lg"><i class="fa-solid fa-envelope-open-text"></i></span>
-            </div>
-            <h3 class="text-2xl font-bold text-slate-900 mt-2">4 Pending</h3>
-            <p class="text-amber-600 text-xs mt-2 font-medium flex items-center gap-1">
-              <i class="fa-solid fa-clock"></i> Action required today
-            </p>
-          </div>
-
-          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-            <div class="flex justify-between items-start">
-              <span class="text-slate-500 text-xs font-semibold uppercase">Dept Task Progress</span>
-              <span class="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><i class="fa-solid fa-list-check"></i></span>
-            </div>
-            <h3 class="text-2xl font-bold text-slate-900 mt-2">78%</h3>
-            <div class="w-full bg-slate-100 rounded-full h-2 mt-3 overflow-hidden">
-              <div class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 78%"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm lg:col-span-2">
-            <div class="flex justify-between items-center mb-4">
-              <div>
-                <h4 class="font-bold text-slate-800 text-sm">Income & Financial Analytics</h4>
-                <p class="text-xs text-slate-400">Monthly budget utilization vs operational expenses</p>
-              </div>
-              <span class="text-xs bg-slate-100 text-slate-600 font-semibold px-2.5 py-1 rounded">2026 YTD</span>
-            </div>
-            <div class="h-64">
-              <canvas id="financialChart"></canvas>
-            </div>
-          </div>
-
-          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-            <div class="mb-4">
-              <h4 class="font-bold text-slate-800 text-sm">Attendance Visual Breakdown</h4>
-              <p class="text-xs text-slate-400">Daily status metrics</p>
-            </div>
-            <div class="h-64 flex items-center justify-center">
-              <canvas id="attendanceChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          
-          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-            <div class="flex justify-between items-center mb-4">
-              <div>
-                <h4 class="font-bold text-slate-800 text-sm">HR & Dept Operations To-Do</h4>
-                <p class="text-xs text-slate-400">Checklist with priority tags</p>
-              </div>
-              <button onclick="addNewTask()" class="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 font-semibold px-3 py-1.5 rounded-lg transition">
-                + Add Task
-              </button>
-            </div>
-            <ul id="todo-list" class="space-y-2.5">
-              <li class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <div class="flex items-center gap-3">
-                  <input type="checkbox" class="w-4 h-4 text-blue-600 rounded accent-blue-600 cursor-pointer">
-                  <span class="text-xs font-medium text-slate-700">Approve Monthly Payroll Disbursement</span>
+    <main class="max-w-7xl mx-auto px-6">
+        
+        <!-- Stats Widgets -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="glass-card p-6 rounded-3xl relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs uppercase font-bold text-slate-400 tracking-wider">Total Workforce</p>
+                        <h3 class="text-3xl font-extrabold text-white mt-1" th:text="${#lists.size(listEmployees)}">0</h3>
+                    </div>
+                    <div class="p-3 bg-purple-500/10 text-purple-400 rounded-2xl">
+                        <i class="fa-solid fa-users text-xl"></i>
+                    </div>
                 </div>
-                <span class="px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold uppercase rounded">High</span>
-              </li>
-              <li class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <div class="flex items-center gap-3">
-                  <input type="checkbox" class="w-4 h-4 text-blue-600 rounded accent-blue-600 cursor-pointer">
-                  <span class="text-xs font-medium text-slate-700">Quarterly Dept Performance Review</span>
+                <div class="mt-4 flex items-center text-xs text-emerald-400 font-medium">
+                    <i class="fa-solid fa-circle-check mr-1"></i> Active System Sync
                 </div>
-                <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold uppercase rounded">Medium</span>
-              </li>
-              <li class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <div class="flex items-center gap-3">
-                  <input type="checkbox" class="w-4 h-4 text-blue-600 rounded accent-blue-600 cursor-pointer">
-                  <span class="text-xs font-medium text-slate-700">Update Regional Holiday Calendar</span>
-                </div>
-                <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase rounded">Low</span>
-              </li>
-            </ul>
-          </div>
-
-          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-            <div class="flex justify-between items-center mb-4">
-              <div>
-                <h4 class="font-bold text-slate-800 text-sm">Employee Directory Preview</h4>
-                <p class="text-xs text-slate-400">Department team hierarchy</p>
-              </div>
-              <button onclick="switchTab('employees')" class="text-xs text-blue-600 hover:underline font-semibold">View All</button>
             </div>
+
+            <div class="glass-card p-6 rounded-3xl relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs uppercase font-bold text-slate-400 tracking-wider">Server Status</p>
+                        <h3 class="text-2xl font-extrabold text-emerald-400 mt-1">Live / Operational</h3>
+                    </div>
+                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-2xl">
+                        <i class="fa-solid fa-server text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-xs text-slate-400 font-medium">
+                    <span>Spring Boot & Render Active</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs uppercase font-bold text-slate-400 tracking-wider">Frontend Engine</p>
+                        <h3 class="text-2xl font-extrabold text-indigo-400 mt-1">Tailwind 3D Glass</h3>
+                    </div>
+                    <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-2xl">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-xs text-indigo-300 font-medium">
+                    <span>Modern Dark Aesthetic</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employee Table Container -->
+        <div class="glass-card rounded-3xl p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-lg font-bold text-white">Employee Directory</h2>
+                    <p class="text-xs text-slate-400">Manage all registered staff members</p>
+                </div>
+            </div>
+
             <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs text-slate-600">
-                <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider">
-                  <tr>
-                    <th class="p-2.5">Employee</th>
-                    <th class="p-2.5">Department</th>
-                    <th class="p-2.5">Designation</th>
-                    <th class="p-2.5">Status</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                  <tr>
-                    <td class="p-2.5 font-semibold text-slate-800">Amit Verma</td>
-                    <td class="p-2.5">Engineering</td>
-                    <td class="p-2.5">Java Backend Dev</td>
-                    <td class="p-2.5"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold">Active</span></td>
-                  </tr>
-                  <tr>
-                    <td class="p-2.5 font-semibold text-slate-800">Priya Kadam</td>
-                    <td class="p-2.5">Design</td>
-                    <td class="p-2.5">UI/UX Designer</td>
-                    <td class="p-2.5"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold">Active</span></td>
-                  </tr>
-                  <tr>
-                    <td class="p-2.5 font-semibold text-slate-800">Siddharth Rao</td>
-                    <td class="p-2.5">Operations</td>
-                    <td class="p-2.5">Lead Coordinator</td>
-                    <td class="p-2.5"><span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">On Leave</span></td>
-                  </tr>
-                </tbody>
-              </table>
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="text-xs uppercase font-semibold text-slate-400 border-b border-slate-700/60 bg-slate-800/40">
+                        <tr>
+                            <th class="py-4 px-4">ID</th>
+                            <th class="py-4 px-4">Employee Name</th>
+                            <th class="py-4 px-4">Email</th>
+                            <th class="py-4 px-4">Department</th>
+                            <th class="py-4 px-4">Salary</th>
+                            <th class="py-4 px-4 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800">
+                        <!-- Thymeleaf Loop -->
+                        <tr th:each="employee : ${listEmployees}" class="hover:bg-slate-800/50 transition">
+                            <td class="py-4 px-4 font-bold text-purple-400" th:text="${'#EMP-' + employee.id}">#EMP-1</td>
+                            <td class="py-4 px-4 font-semibold text-white" th:text="${employee.firstName + ' ' + employee.lastName}">John Doe</td>
+                            <td class="py-4 px-4 text-slate-400" th:text="${employee.email}">john@example.com</td>
+                            <td class="py-4 px-4">
+                                <span class="bg-purple-500/10 text-purple-300 text-xs px-3 py-1 rounded-full font-medium border border-purple-500/20"
+                                      th:text="${employee.department != null ? employee.department : 'Engineering'}">
+                                    Engineering
+                                </span>
+                            </td>
+                            <td class="py-4 px-4 font-medium text-emerald-400" th:text="${'₹' + employee.salary}">₹50,000</td>
+                            <td class="py-4 px-4 text-center space-x-2">
+                                <a th:href="@{/showFormForUpdate/{id}(id=${employee.id})}" 
+                                   class="inline-flex items-center gap-1 bg-slate-800 hover:bg-purple-600 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                                </a>
+                                <a th:href="@{/deleteEmployee/{id}(id=${employee.id})}" 
+                                   class="inline-flex items-center gap-1 bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium transition border border-red-500/20">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                        <!-- Empty State -->
+                        <tr th:if="${#lists.isEmpty(listEmployees)}">
+                            <td colSpan="6" class="py-8 text-center text-slate-500">
+                                No employees found. Click "Add New Employee" to get started!
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-          </div>
-
         </div>
+    </main>
 
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h4 class="font-bold text-slate-800 text-sm">Reports & Compliance Engine</h4>
-            <p class="text-xs text-slate-400">Export statistical attendance, financial audit, and payroll metrics</p>
-          </div>
-          <div class="flex gap-2">
-            <button onclick="exportData('PDF')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-medium transition flex items-center gap-1.5">
-              <i class="fa-solid fa-file-pdf text-red-400"></i> PDF Report
-            </button>
-            <button onclick="exportData('CSV')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-medium transition flex items-center gap-1.5">
-              <i class="fa-solid fa-file-csv text-emerald-400"></i> CSV Data
-            </button>
-            <button onclick="exportData('Excel')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-medium transition flex items-center gap-1.5">
-              <i class="fa-solid fa-file-excel text-green-400"></i> Excel Spreadsheet
-            </button>
-          </div>
-        </div>
-
-      </main>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
 </body>
 </html>
