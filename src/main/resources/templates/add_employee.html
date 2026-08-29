@@ -1,33 +1,100 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Employee</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Employee</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS Link -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
-<div class="container my-5">
-    <h2>Add New Employee</h2>
-    <form th:action="@{/saveEmployee}" th:object="${employee}" method="POST">
-        <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input type="text" th:field="*{name}" class="form-content form-control" required>
+<body class="min-h-screen flex items-center justify-center p-6">
+
+    <div class="glass-card p-8 rounded-3xl w-full max-w-lg shadow-2xl relative overflow-hidden">
+        <!-- Header -->
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-700/60">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-3 rounded-2xl text-white shadow-lg glow-purple">
+                <i class="fa-solid fa-user-plus text-lg"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-extrabold text-white">Add New Employee</h2>
+                <p class="text-xs text-slate-400">Fill in the details to register a team member</p>
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" th:field="*{email}" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Department</label>
-            <input type="text" th:field="*{department}" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Salary</label>
-            <input type="number" step="0.01" th:field="*{salary}" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-info">Save Employee</button>
-        <a th:href="@{/}" class="btn btn-secondary">Cancel</a>
-    </form>
-</div>
+
+        <!-- Form -->
+        <form action="#" th:action="@{/saveEmployee}" th:object="${employee}" method="POST" class="space-y-4">
+            <!-- Hidden ID Field -->
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs uppercase font-bold text-slate-400 mb-1.5">First Name</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
+                        <input type="text" th:field="*{firstName}" placeholder="John" required
+                               class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:ring-2 focus:ring-purple-500 outline-none transition" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase font-bold text-slate-400 mb-1.5">Last Name</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
+                        <input type="text" th:field="*{lastName}" placeholder="Doe" required
+                               class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:ring-2 focus:ring-purple-500 outline-none transition" />
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs uppercase font-bold text-slate-400 mb-1.5">Email Address</label>
+                <div class="relative">
+                    <i class="fa-solid fa-envelope absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
+                    <input type="email" th:field="*{email}" placeholder="john.doe@company.com" required
+                           class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:ring-2 focus:ring-purple-500 outline-none transition" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs uppercase font-bold text-slate-400 mb-1.5">Department</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-building absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
+                        <input type="text" th:field="*{department}" placeholder="Engineering"
+                               class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:ring-2 focus:ring-purple-500 outline-none transition" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase font-bold text-slate-400 mb-1.5">Salary (₹)</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-indian-rupee-sign absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
+                        <input type="number" th:field="*{salary}" placeholder="60000"
+                               class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:ring-2 focus:ring-purple-500 outline-none transition" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-3 pt-4">
+                <button type="submit" 
+                        class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold py-2.5 rounded-xl transition shadow-lg glow-purple text-xs flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check"></i>
+                    <span>Save Employee</span>
+                </button>
+                <a th:href="@{/}" 
+                   class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition border border-slate-700 text-center">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
 </body>
 </html>
