@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@CrossOrigin(origins = "*") // Localhost + Render Cloud Deployment dono allow honge
+@CrossOrigin(origins = "*")
 public class EmployeeController {
 
     private final EmployeeRepository repository;
@@ -18,29 +18,54 @@ public class EmployeeController {
         this.repository = repository;
     }
 
-    // ==========================================
-    // 1. THYMELEAF HTML VIEW MAPPINGS
-    // ==========================================
-
-    // Purana HTML Homepage mapping
+    // 1. Homepage: List all employees (Dark Glassmorphism UI)
     @GetMapping("/")
     public String viewHomePage(Model model) {
         model.addAttribute("listEmployees", repository.findAll());
         return "index";
     }
 
+    // 2. Show Form to Add New Employee
+    @GetMapping("/showNewEmployeeForm")
+    public String showNewEmployeeForm(Model model) {
+        Employee employee = new Employee();
+        model.addAttribute("employee", employee);
+        return "add-employee";
+    }
+
+    // 3. Save Employee (Add or Update)
+    @PostMapping("/saveEmployee")
+    public String saveEmployee(@ModelAttribute("employee") Employee employee) {
+        repository.save(employee);
+        return "redirect:/";
+    }
+
+    // 4. Show Form for Update
+    @GetMapping("/showFormForUpdate/{id}")
+    public String showFormForUpdate(@PathVariable(value = "id") long id, Model model) {
+        Employee employee = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid employee Id: " + id));
+        model.addAttribute("employee", employee);
+        return "add-employee"; // Same form can be reused for update
+    }
+
+    // 5. Delete Employee
+    @GetMapping("/deleteEmployee/{id}")
+    public String deleteEmployee(@PathVariable(value = "id") long id) {
+        repository.deleteById(id);
+        return "redirect:/";
+    }
+
     // ==========================================
-    // 2. REACT FRONTEND KE LIYE REST API ENDPOINTS
+    // REST API ENDPOINTS (For React / Mobile App)
     // ==========================================
 
-    // Fetch all employees for React (JSON Format)
     @GetMapping("/api/employees")
     @ResponseBody
     public List<Employee> getEmployeesApi() {
         return repository.findAll();
     }
 
-    // OTP Auth verification for React
     @PostMapping("/api/auth/verify-otp")
     @ResponseBody
     public String verifyOtp(@RequestBody String body) {
